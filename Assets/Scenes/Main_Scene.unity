@@ -13665,7 +13665,7 @@ MonoBehaviour:
   chaseSpeed: 6
   changePatrolDirectionTime: 4
   obstacleAvoidDistance: 1
-  detectionRadius: 10
+  detectionRadius: 0
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0
