@@ -8,7 +8,7 @@ public class LogCollector : MonoBehaviour
     public float pickupRange = 5f;
 
     [Header("Dock Settings")]
-    public Transform dock; // Assign in Inspector
+    public Transform dock;
     public float dockRange = 3f;
 
     [Header("Dock Tracking")]
@@ -23,23 +23,12 @@ public class LogCollector : MonoBehaviour
         controls = new PlayerControls();
         controls.Gameplay.PickUp.performed += ctx => HandleInteract();
 
+        // Try to get animator from dock (optional)
         if (dock != null)
         {
-            // Try get Animator directly from dock
             dockAnimator = dock.GetComponent<Animator>();
-
-            // If not there, try children
             if (dockAnimator == null)
                 dockAnimator = dock.GetComponentInChildren<Animator>();
-
-            if (dockAnimator != null)
-                Debug.Log("[LogCollector] ✅ Dock Animator found on: " + dockAnimator.gameObject.name);
-            else
-                Debug.LogError("[LogCollector] ❌ Dock Animator NOT found! Make sure the dock has an Animator.");
-        }
-        else
-        {
-            Debug.LogError("[LogCollector] ❌ Dock reference missing in Inspector!");
         }
     }
 
@@ -51,21 +40,14 @@ public class LogCollector : MonoBehaviour
         if (carriedLog == null)
         {
             TryPickupLog();
-            return;
-        }
-
-        float distanceToDock = Vector2.Distance(transform.position, dock.position);
-        Debug.Log($"[LogCollector] Carrying log. Distance to dock: {distanceToDock}");
-
-        if (distanceToDock <= dockRange)
-        {
-            Debug.Log("[LogCollector] In range -> placing log");
-            PlaceLogAtDock();
         }
         else
         {
-            Debug.Log("[LogCollector] Not near dock -> dropping log");
-            DropLog();
+            float distanceToDock = Vector2.Distance(transform.position, dock.position);
+            if (distanceToDock <= dockRange)
+                PlaceLogAtDock();
+            else
+                DropLog();
         }
     }
 
@@ -73,16 +55,31 @@ public class LogCollector : MonoBehaviour
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, pickupRange);
 
+        // Find the closest log
+        GameObject closestLog = null;
+        float closestDistance = Mathf.Infinity;
+
         foreach (var hit in hits)
         {
             if (hit.CompareTag("Log"))
             {
-                PickUp(hit.gameObject);
-                return;
+                float distance = Vector2.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestLog = hit.gameObject;
+                }
             }
         }
 
-        Debug.Log("[LogCollector] No logs nearby");
+        if (closestLog != null && closestDistance <= pickupRange)
+        {
+            PickUp(closestLog);
+        }
+        else
+        {
+            Debug.Log("[LogCollector] No logs in pickup range.");
+        }
     }
 
     void PickUp(GameObject log)
@@ -96,42 +93,33 @@ public class LogCollector : MonoBehaviour
 
         Collider2D col = carriedLog.GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
-
-        Debug.Log("[LogCollector] Picked up log " + log.name);
     }
 
     void PlaceLogAtDock()
     {
         if (carriedLog == null) return;
 
-        // Before destroying it, remove physics and colliders so nothing weird happens
         Rigidbody2D rb = carriedLog.GetComponent<Rigidbody2D>();
         if (rb != null) rb.isKinematic = true;
 
         Collider2D col = carriedLog.GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        string logName = carriedLog.name;
-
-        // Destroy the log object so it is completely removed
         Destroy(carriedLog);
         carriedLog = null;
 
         logsPlaced++;
-        Debug.Log("[LogCollector] Log '" + logName + "' placed at dock and destroyed. Total logs placed: " + logsPlaced);
 
-        // Update dock animation if you have one
         if (dockAnimator != null)
         {
             dockAnimator.SetInteger("PlanksPlaced", logsPlaced);
-            Debug.Log("[LogCollector] Dock animation updated. PlanksPlaced = " + logsPlaced);
         }
     }
 
-
-
     void DropLog()
     {
+        if (carriedLog == null) return;
+
         carriedLog.transform.SetParent(null);
         carriedLog.transform.position = transform.position;
 
@@ -141,7 +129,6 @@ public class LogCollector : MonoBehaviour
         Collider2D col = carriedLog.GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
 
-        Debug.Log("[LogCollector] Log dropped: " + carriedLog.name);
         carriedLog = null;
     }
 
