@@ -83,17 +83,24 @@ public class LogCollector : MonoBehaviour
     }
 
     void PickUp(GameObject log)
-    {
-        carriedLog = log;
-        carriedLog.transform.SetParent(carryPoint);
-        carriedLog.transform.localPosition = Vector3.zero;
+{
+    carriedLog = log;
 
-        Rigidbody2D rb = carriedLog.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.isKinematic = true;
+    // Parent it to the carry point
+    carriedLog.transform.SetParent(carryPoint);
+    carriedLog.transform.localPosition = Vector3.zero;
+    carriedLog.transform.localRotation = Quaternion.identity;
 
-        Collider2D col = carriedLog.GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
-    }
+    // Disable physics while carried
+    Rigidbody2D rb = carriedLog.GetComponent<Rigidbody2D>();
+    if (rb != null) rb.isKinematic = true;
+
+    // Disable collisions while carried
+    Collider2D col = carriedLog.GetComponent<Collider2D>();
+    if (col != null) col.enabled = false;
+
+    Debug.Log("[LogCollector] Picked up log: " + carriedLog.name);
+}
 
     void PlaceLogAtDock()
     {
