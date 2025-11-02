@@ -53,31 +53,34 @@ public class TreeSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnTree()
+private void SpawnTree()
+{
+    Vector3 pos = GetRandomPosition();
+    if (pos == Vector3.zero) return;
+
+    GameObject tree = Instantiate(treePrefab, pos, Quaternion.identity);
+
+    Tree treeScript = tree.GetComponent<Tree>();
+    if (treeScript != null)
     {
-        Vector3 pos = GetRandomPosition();
+        // Example: toggle or explicitly set a boolean
+        treeScript.canDropLog = true;  // ✅ Enable dropping logs
 
-        if (pos != Vector3.zero)
+        // Assign wood drop prefab
+        treeScript.woodDropPrefab = woodDropPrefab;
+
+        // Optional drop point
+        if (dropPointPrefab != null)
         {
-            GameObject tree = Instantiate(treePrefab, pos, Quaternion.identity);
-            currentTrees.Add(tree);
-
-            // Assign wood drop prefab to the Tree component
-            Tree treeScript = tree.GetComponent<Tree>();
-            if(treeScript != null)
-            {
-                treeScript.woodDropPrefab = woodDropPrefab;
-
-                // Optional: assign drop point if defined
-                if(dropPointPrefab != null)
-                {
-                    Transform drop = Instantiate(dropPointPrefab, tree.transform);
-                    drop.localPosition = Vector3.zero;
-                    treeScript.dropPoint = drop;
-                }
-            }
+            Transform dropPoint = Instantiate(dropPointPrefab, tree.transform);
+            treeScript.dropPoint = dropPoint;
         }
+
+        currentTrees.Add(tree);
     }
+}
+
+
 
     private Vector3 GetRandomPosition()
     {

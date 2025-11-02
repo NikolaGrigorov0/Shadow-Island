@@ -13964,6 +13964,7 @@ GameObject:
   - component: {fileID: 917475400}
   - component: {fileID: 917475402}
   - component: {fileID: 917475403}
+  - component: {fileID: 917475404}
   m_Layer: 3
   m_Name: Dock
   m_TagString: Dock
@@ -14112,6 +14113,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &917475404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917475398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6afa3d2548a9f74191afe961b0ef3b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogCollector
+  carryPoint: {fileID: 1304253259}
+  pickupRange: 2.5
+  dock: {fileID: 917475401}
+  dockRange: 3
+  logsPlaced: 0
 --- !u!1 &964513008
 GameObject:
   m_ObjectHideFlags: 0
@@ -17653,11 +17671,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &1022620737 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8869174957847021693, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
-  m_PrefabInstance: {fileID: 4780107333518228141}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1304253258
 GameObject:
   m_ObjectHideFlags: 0
@@ -17798,6 +17811,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 290904854}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1587627636 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4453118659037533101, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
+  m_PrefabInstance: {fileID: 4780107333518228141}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1626572639
 GameObject:
   m_ObjectHideFlags: 0
@@ -18129,10 +18147,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   dockRepairRadius: 2
-  planksNeeded: 10
   dockLayer:
     serializedVersion: 2
     m_Bits: 0
+  bridgeScalePerLog: 0.1
+  initialBridgeScale: 1
+  bridgeTag: Bridge
 --- !u!1 &1795761871
 GameObject:
   m_ObjectHideFlags: 0
@@ -18328,7 +18348,7 @@ MonoBehaviour:
   mapMax: {x: 28, y: 13}
   spawnRadius: 1.5
   respawnCooldown: 30
-  woodDropPrefab: {fileID: 1022620737}
+  woodDropPrefab: {fileID: 1587627636}
   dropPointPrefab: {fileID: 33216760}
 --- !u!4 &1995770618
 Transform:
@@ -18590,9 +18610,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 917475401}
     - target: {fileID: 4750193997495804987, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4750193997495804987, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
       propertyPath: carryPoint
       value: 
       objectReference: {fileID: 1304253259}
+    - target: {fileID: 4750193997495804987, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
+      propertyPath: pickupRange
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7869914576634527749, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
       propertyPath: m_LocalPosition.x
       value: 20.34
@@ -18653,7 +18681,7 @@ PrefabInstance:
     - target: {fileID: 333904259333138354, guid: 404130517939f24479928d20a64db3ef, type: 3}
       propertyPath: woodDropPrefab
       value: 
-      objectReference: {fileID: 8869174957847021693, guid: 09878dea22f27af4ea1dcbb1cf0ce110, type: 3}
+      objectReference: {fileID: 1587627636}
     - target: {fileID: 634213642299211005, guid: 404130517939f24479928d20a64db3ef, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.25

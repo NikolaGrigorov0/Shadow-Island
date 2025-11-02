@@ -10,6 +10,7 @@ public class Tree : MonoBehaviour
 
     public GameObject woodDropPrefab;
     public Transform dropPoint;
+    public bool canDropLog = true;
 
     [Header("Player Interaction")]
     public float interactionDistance = 2f;
@@ -136,22 +137,16 @@ public class Tree : MonoBehaviour
 
     isChopped = true;
     isChopping = false;
-    chopProgress = 1f;
 
-    // Use existing child log
-    Transform childLog = transform.Find("WoodLogs"); // the visual log
-    if(childLog != null)
+    if (canDropLog)  // ✅ Only drop if this flag is true
     {
-        childLog.SetParent(null);
-        if(childLog.TryGetComponent<Rigidbody2D>(out var rb)) rb.isKinematic = false;
-        if(childLog.TryGetComponent<Collider2D>(out var col)) col.enabled = true;
-    }
-    else if(woodDropPrefab != null) // fallback
-    {
-        Transform drop = dropPoint != null ? dropPoint : transform;
-        Instantiate(woodDropPrefab, drop.position, Quaternion.identity);
+        if (woodDropPrefab != null)
+        {
+            Instantiate(woodDropPrefab, dropPoint != null ? dropPoint.position : transform.position, Quaternion.identity);
+        }
     }
 
+    // Register in spawner
     TreeSpawner spawner = FindObjectOfType<TreeSpawner>();
     if (spawner != null)
     {
@@ -161,6 +156,8 @@ public class Tree : MonoBehaviour
 
     Destroy(gameObject);
 }
+
+
 
 
     void OnDestroy()

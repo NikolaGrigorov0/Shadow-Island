@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game_Over : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class Game_Over : MonoBehaviour
     void GameOver()
     {
         // Show game over UI
-        gameOverPanel.SetActive(true);
+        SceneManager.LoadScene("Game_Over");
 
         // Optional: stop game time
         Time.timeScale = 0f;

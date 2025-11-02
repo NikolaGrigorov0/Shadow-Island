@@ -5,7 +5,7 @@ public class LogCollector : MonoBehaviour
 {
     [Header("Carry Settings")]
     public Transform carryPoint;
-    public float pickupRange = 5f;
+    public float pickupRange = 1.5f;
 
     [Header("Dock Settings")]
     public Transform dock;
@@ -51,36 +51,44 @@ public class LogCollector : MonoBehaviour
         }
     }
 
-    void TryPickupLog()
+   void TryPickupLog()
+{
+    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, pickupRange);
+
+    // Find the closest log that can be picked up
+    GameObject closestLog = null;
+    float closestDistance = Mathf.Infinity;
+
+    foreach (var hit in hits)
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, pickupRange);
-
-        // Find the closest log
-        GameObject closestLog = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (var hit in hits)
+        if (hit.CompareTag("Log"))
         {
-            if (hit.CompareTag("Log"))
+            Log logScript = hit.GetComponent<Log>();
+            if (logScript != null && !logScript.canBePickedUp)
             {
-                float distance = Vector2.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestLog = hit.gameObject;
-                }
+                // This log is locked, skip it
+                continue;
+            }
+
+            float distance = Vector2.Distance(transform.position, hit.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestLog = hit.gameObject;
             }
         }
-
-        if (closestLog != null && closestDistance <= pickupRange)
-        {
-            PickUp(closestLog);
-        }
-        else
-        {
-            Debug.Log("[LogCollector] No logs in pickup range.");
-        }
     }
+
+    if (closestLog != null && closestDistance <= pickupRange)
+    {
+        PickUp(closestLog);
+    }
+    else
+    {
+        Debug.Log("[LogCollector] No logs in pickup range.");
+    }
+}
+
 
     void PickUp(GameObject log)
 {
